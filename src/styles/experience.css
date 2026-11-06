@@ -1,0 +1,366 @@
+/* ---------- 3D room HUD ---------- */
+.room-scene { position: fixed; inset: 0; touch-action: none; overscroll-behavior: none; }
+.room-canvas { position: absolute; inset: 0; }
+.room-canvas canvas { display: block; touch-action: none; }
+/* Soft cinematic vignette over the 3D view (never intercepts input) */
+.room-canvas::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 105% 90% at 50% 45%, transparent 62%, rgba(10, 2, 4, 0.38) 100%);
+}
+
+.hud { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+.hud button { pointer-events: auto; }
+
+.hud-exit {
+  position: absolute; top: 14px; left: 14px;
+  background: rgba(26, 5, 8, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: var(--gold-soft);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13.5px;
+  backdrop-filter: blur(6px);
+}
+.hud-exit:hover { background: rgba(94, 18, 32, 0.8); }
+
+.hud-prompt {
+  position: absolute;
+  left: 50%; bottom: 108px;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap; justify-content: center;
+  background: rgba(26, 5, 8, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  color: var(--ivory);
+  padding: 11px 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  max-width: 92vw;
+  text-align: center;
+  backdrop-filter: blur(6px);
+  animation: promptIn 0.25s ease-out;
+}
+.hud-prompt em { color: var(--gold-soft); font-style: italic; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; }
+.ring-prompt { border-color: var(--rose); box-shadow: 0 0 26px rgba(201, 64, 77, 0.35); }
+@keyframes promptIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+.hud-video {
+  position: absolute;
+  left: 50%; bottom: 108px;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(26, 5, 8, 0.82);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  padding: 8px 10px;
+  border-radius: 999px;
+  max-width: 94vw;
+  backdrop-filter: blur(6px);
+  animation: promptIn 0.25s ease-out;
+}
+.hud-video button {
+  display: flex; align-items: center; gap: 7px;
+  color: var(--gold-soft);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14.5px;
+}
+.hud-video button:hover { background: rgba(212, 175, 55, 0.16); }
+.video-missing-note { color: var(--blush); font-size: 14px; padding: 6px 12px; }
+.video-missing-note code { color: var(--gold-soft); }
+
+.hud-help {
+  position: absolute;
+  left: 50%; bottom: 16px;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: rgba(255, 246, 230, 0.62);
+  background: rgba(26, 5, 8, 0.5);
+  padding: 7px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ---------- Cake-cut / ring flash banners ---------- */
+.cake-flash {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  left: 0; right: 0; margin-inline: auto; width: fit-content;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  background: rgba(26, 5, 8, 0.85);
+  border: 1.5px solid var(--gold);
+  border-radius: 18px;
+  padding: 16px 26px;
+  max-width: min(560px, 92vw);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 34px rgba(212, 175, 55, 0.3);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.cake-flash-names {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.25rem, 5vw, 1.7rem);
+  color: var(--gold-soft);
+  letter-spacing: 0.02em;
+}
+.cake-flash-main { font-size: clamp(1rem, 4.2vw, 1.2rem); color: var(--ivory); }
+.cake-flash-sub {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.95rem, 3.8vw, 1.1rem);
+  color: var(--blush);
+}
+.ring-flash { border-color: var(--rose); box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 34px rgba(201,64,77,.35); }
+
+/* Proposal dim — the room darkens, the couple + ring stay lit */
+.ceremony-dim {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: radial-gradient(ellipse 65% 60% at 50% 52%, transparent 52%, rgba(5, 0, 2, 0.42) 100%);
+}
+
+/* Final reveal — bottom of the screen, couple stays visible above */
+.final-reveal {
+  position: absolute;
+  left: 0; right: 0; margin-inline: auto; width: fit-content; bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+  max-width: 94vw;
+}
+.final-reveal-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.7rem, 6.4vw, 2.6rem);
+  color: var(--gold-soft);
+}
+.final-reveal-line {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 4.4vw, 1.45rem);
+  color: var(--ivory);
+}
+.final-reveal-date { letter-spacing: 0.3em; color: var(--blush); font-size: 0.95rem; margin-top: 3px; }
+
+/* Cake end card */
+.cake-done-card {
+  position: absolute;
+  left: 0; right: 0; margin-inline: auto; width: fit-content; bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  text-align: center;
+  background: rgba(26, 5, 8, 0.88);
+  border: 1.5px solid var(--gold);
+  border-radius: 18px;
+  padding: 20px 28px 8px;
+  max-width: min(540px, 92vw);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 34px rgba(212, 175, 55, 0.28);
+  backdrop-filter: blur(6px);
+}
+.cake-done-card p {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 4.6vw, 1.45rem);
+  color: var(--ivory);
+}
+.cake-done-card .enter-button { margin-top: 12px; margin-bottom: 14px; }
+
+.proposal-line {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 4.8vw, 1.5rem);
+  color: var(--wine);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+/* Mobile controls — hidden on fine-pointer desktops */
+.mobile-controls { display: none; }
+.mobile-only { display: none; }
+
+@media (pointer: coarse) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: inline; }
+  .mobile-controls {
+    display: block;
+    position: absolute; inset: 0;
+  }
+  .joystick {
+    position: absolute;
+    left: calc(18px + env(safe-area-inset-left, 0px));
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    width: 124px; height: 124px;
+    border-radius: 50%;
+    background: rgba(255, 246, 230, 0.08);
+    border: 1.5px solid rgba(212, 175, 55, 0.5);
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .joystick-knob {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at 35% 30%, #e9cd7e, #b98a2f);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+  .interact-button {
+    position: absolute;
+    right: calc(22px + env(safe-area-inset-right, 0px));
+    bottom: calc(42px + env(safe-area-inset-bottom, 0px));
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8c2231, #5e1220);
+    border: 1.5px solid var(--gold);
+    color: var(--ivory);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+  .interact-button:disabled { opacity: 0.35; }
+  .hud-prompt, .hud-video { bottom: calc(176px + env(safe-area-inset-bottom, 0px)); max-width: 88vw; }
+  .hud-exit { top: calc(12px + env(safe-area-inset-top, 0px)); min-height: 44px; }
+}
+
+/* Small Android phones: tighten overlays, full-width easy taps */
+@media (max-width: 480px) {
+  .proposal-card { padding: 34px 20px 28px; }
+  .proposal-buttons { flex-direction: column; align-items: stretch; }
+  .yes-button, .no-button { justify-content: center; min-height: 52px; }
+  .memory-card { max-height: 94dvh; }
+  .hud-prompt { font-size: 13.5px; padding: 10px 14px; border-radius: 18px; }
+  .hud-video { flex-wrap: wrap; justify-content: center; border-radius: 18px; }
+  .cut-button { min-height: 52px; width: min(92vw, 420px); justify-content: center; }
+  .enter-button { min-height: 54px; }
+  .music-controller { top: calc(10px + env(safe-area-inset-top, 0px)); right: calc(10px + env(safe-area-inset-right, 0px)); }
+}
+
+/* ---------- Modals (memory + proposal) ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(10, 2, 4, 0.78);
+  backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+}
+.modal-close {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(26, 5, 8, 0.75);
+  color: var(--ivory);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+.modal-close:hover { background: rgba(94, 18, 32, 0.9); }
+
+.memory-card {
+  position: relative;
+  background: #fdf6e9;
+  color: var(--ink);
+  padding: 14px 14px 6px;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 0 0 0 6px #3a2113, 0 0 0 8px var(--gold);
+  max-width: min(560px, 94vw);
+  max-height: 92vh;
+  overflow: auto;
+}
+.memory-card img {
+  width: 100%;
+  max-height: 62vh;
+  object-fit: contain;
+  background: #1c0d08;
+  border-radius: 3px;
+  display: block;
+}
+.memory-missing {
+  padding: 52px 20px; text-align: center; color: #7a4a42;
+  background: #f3e3cd; border-radius: 3px;
+}
+.memory-missing p:first-child { font-size: 34px; color: var(--rose); margin-bottom: 10px; }
+.memory-card figcaption { text-align: center; padding: 16px 8px 14px; }
+.memory-card figcaption h3 { font-size: 1.7rem; color: var(--wine); }
+.memory-card figcaption p { margin-top: 6px; font-size: 1rem; line-height: 1.55; color: #5b4038; }
+
+/* ---------- Proposal ---------- */
+.proposal-backdrop { overflow: hidden; }
+.proposal-spotlight {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 55% 45% at 50% 45%, rgba(255, 205, 120, 0.22), transparent 70%);
+}
+.proposal-card {
+  position: relative;
+  text-align: center;
+  background: linear-gradient(165deg, #fdf6e9, #f6e3c8);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 44px 38px 38px;
+  max-width: min(520px, 94vw);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 0 2px var(--gold), 0 0 60px rgba(212, 175, 55, 0.3);
+}
+.proposal-card .modal-close { background: rgba(122, 31, 43, 0.12); color: var(--wine); border-color: rgba(122,31,43,.3); }
+.proposal-ring { font-size: 54px; margin-bottom: 10px; animation: ringFloat 2.6s ease-in-out infinite; }
+@keyframes ringFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.proposal-teaser { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1.25rem; color: #7a4a42; }
+.proposal-teaser.dim { opacity: 0.75; font-size: 1.1rem; margin-bottom: 8px; }
+.proposal-card h2 { font-size: clamp(1.9rem, 6vw, 2.6rem); color: var(--wine); margin: 12px 0 6px; line-height: 1.2; }
+.proposal-card h2.no-heading { font-size: clamp(1.5rem, 5vw, 2rem); }
+.proposal-sub { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1.25rem; color: #7a4a42; }
+.proposal-heart { margin-bottom: 6px; animation: ringFloat 2.2s ease-in-out infinite; }
+.proposal-buttons {
+  display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 26px;
+}
+.yes-button {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, #a41623, #6e0d18);
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 14px 34px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  box-shadow: 0 10px 28px rgba(164, 22, 35, 0.4);
+}
+.yes-button:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(164, 22, 35, 0.5); }
+.no-button {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent;
+  color: var(--wine);
+  font-size: 1.05rem;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(122, 31, 43, 0.5);
+}
+.no-button:hover { background: rgba(122, 31, 43, 0.08); }
+
+.petal-burst { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.petal-burst span {
+  position: absolute; left: 50%; top: 38%;
+  font-size: 20px;
+  animation: burst 1.5s ease-out both;
+  animation-delay: var(--delay);
+  transform: rotate(var(--angle)) translateY(-10px);
+  opacity: 0;
+}
+@keyframes burst {
+  0% { opacity: 0; transform: rotate(var(--angle)) translateY(0) scale(0.4); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(-150px) scale(1.15); }
+}
+
+/* Tap feedback + reliable taps on the cinematic cards */
+.cake-done-card { pointer-events: auto; touch-action: manipulation; }
+.cake-done-card .enter-button, .yes-button, .no-button, .interact-button { min-height: 48px; }
+.cake-done-card .enter-button:active, .yes-button:active, .no-button:active,
+.interact-button:active { transform: scale(0.94); filter: brightness(1.15); }
+
+.hud-sound {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top, 0px)); left: calc(12px + env(safe-area-inset-left, 0px));
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px; padding: 0 14px; border-radius: 999px;
+  background: rgba(26, 5, 8, 0.78); color: var(--ivory, #fff6e6);
+  border: 1px solid rgba(212, 175, 55, 0.5); font-size: 13px;
+}

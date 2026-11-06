@@ -1,0 +1,174 @@
+:root {
+  --burgundy: #43101d;
+  --burgundy-deep: #1a0508;
+  --wine: #7a1f2b;
+  --blush: #e8b4b8;
+  --rose: #c9404d;
+  --gold: #d4af37;
+  --gold-soft: #f3d98b;
+  --ivory: #fff6e6;
+  --ink: #2a1710;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root { height: 100%; }
+/* Mobile browsers: use the dynamic viewport so the address bar
+   showing/hiding never clips the joystick or buttons. */
+#root { height: 100dvh; }
+button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Jost', system-ui, sans-serif;
+  background: var(--burgundy-deep);
+  color: var(--ivory);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+kbd {
+  background: rgba(255, 246, 230, 0.16);
+  border: 1px solid rgba(243, 217, 139, 0.5);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 0 6px;
+  font-family: inherit;
+  font-size: 0.85em;
+}
+
+.app { height: 100%; position: relative; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Music controller ---------- */
+.music-controller {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(26, 5, 8, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 999px;
+  padding: 5px 8px;
+  backdrop-filter: blur(6px);
+  font-size: 13px;
+}
+.music-controller button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--gold-soft);
+}
+.music-controller button:hover { background: rgba(212, 175, 55, 0.15); }
+.music-missing { color: var(--blush); padding: 8px 14px; gap: 7px; }
+.spin-slow { animation: spin 5s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Welcome ---------- */
+.welcome {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 38%, rgba(212, 175, 55, 0.16), transparent 70%),
+    radial-gradient(ellipse 90% 70% at 50% 110%, rgba(122, 31, 43, 0.55), transparent),
+    var(--burgundy-deep);
+  position: relative;
+}
+.welcome-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 190, 120, 0.10), transparent 55%);
+}
+.welcome-heart { color: var(--rose); margin-bottom: 14px; }
+.welcome h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); color: var(--ivory); letter-spacing: 0.01em; }
+.welcome-sub {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  color: var(--gold-soft);
+  margin-top: 10px;
+}
+.welcome-msg {
+  max-width: 520px;
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgba(255, 246, 230, 0.85);
+  margin-top: 20px;
+}
+.enter-button {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: linear-gradient(135deg, #8c2231, #5e1220);
+  border: 1px solid var(--gold);
+  color: var(--ivory);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  padding: 15px 32px;
+  border-radius: 999px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5), 0 0 22px rgba(212, 175, 55, 0.22);
+}
+.enter-button:hover { box-shadow: 0 10px 34px rgba(0,0,0,.5), 0 0 34px rgba(212,175,55,.4); }
+.enter-button.small { margin-top: 22px; padding: 12px 26px; font-size: 0.98rem; }
+.welcome-controls-note {
+  margin-top: 26px;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 246, 230, 0.5);
+}
+
+/* ---------- Loading ---------- */
+.loading {
+  height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(122,31,43,.5), transparent 70%), var(--burgundy-deep);
+}
+.loading-heart { color: var(--rose); }
+.loading p {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--gold-soft);
+}
+.loading-bar {
+  width: 210px; height: 3px; border-radius: 99px;
+  background: rgba(255,246,230,.14); overflow: hidden; position: relative;
+}
+.loading-bar-fill {
+  position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+  background: var(--gold); border-radius: 99px;
+}

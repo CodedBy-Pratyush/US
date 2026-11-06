@@ -1,0 +1,146 @@
+/* ---------- Scene A: ribbon opening ---------- */
+.opening {
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 65% 45% at 50% 30%, rgba(212, 175, 55, 0.13), transparent 70%),
+    radial-gradient(ellipse 100% 80% at 50% 115%, rgba(94, 18, 32, 0.65), transparent),
+    #12030a;
+}
+.opening-spotlight {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 46% 34% at 50% 46%, rgba(255, 196, 110, 0.14), transparent 70%);
+}
+.dust span {
+  position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(243, 217, 139, 0.55);
+  animation: rise 9s linear infinite;
+  pointer-events: none;
+}
+@keyframes rise {
+  from { transform: translateY(0); opacity: 0; }
+  12% { opacity: 0.8; }
+  to { transform: translateY(-105vh); opacity: 0; }
+}
+.corner {
+  position: absolute;
+  font-size: 30px;
+  color: rgba(212, 175, 55, 0.55);
+  pointer-events: none;
+}
+.corner-tl { top: 20px; left: 24px; }
+.corner-tr { top: 20px; right: 24px; transform: scaleX(-1); }
+.corner-bl { bottom: 20px; left: 24px; transform: scaleY(-1); }
+.corner-br { bottom: 20px; right: 24px; transform: scale(-1); }
+
+.opening-copy { text-align: center; z-index: 2; margin-bottom: 52px; }
+.opening-eyebrow {
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--blush);
+  margin-bottom: 18px;
+}
+.opening-copy h1 {
+  font-size: clamp(2.1rem, 6.4vw, 3.9rem);
+  color: var(--gold-soft);
+  text-shadow: 0 4px 30px rgba(212, 175, 55, 0.25);
+}
+.opening-sub {
+  margin-top: 14px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 3.4vw, 1.55rem);
+  color: rgba(255, 246, 230, 0.88);
+}
+
+/* The ribbon itself — satin red with a gold edge, split by --cut */
+.ribbon-track {
+  position: relative;
+  width: min(860px, 92vw);
+  height: 92px;
+  z-index: 2;
+  touch-action: none;
+  cursor: ew-resize;
+  user-select: none;
+}
+.ribbon {
+  position: absolute;
+  top: 50%;
+  height: 54px;
+  width: 50.5%;
+  transform: translateY(-50%);
+  background:
+    linear-gradient(180deg, #a41623 0%, #d6455c 28%, #8c1220 62%, #6e0d18 100%);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), inset 0 2px 0 rgba(255, 190, 180, 0.5);
+  border-top: 2px solid rgba(212, 175, 55, 0.75);
+  border-bottom: 2px solid rgba(212, 175, 55, 0.75);
+  transition: transform 1s cubic-bezier(0.3, 0.7, 0.4, 1), opacity 1s ease;
+}
+.ribbon-left {
+  left: 0;
+  clip-path: inset(0 calc(var(--cut) * 100%) 0 0);
+  border-radius: 4px 0 0 4px;
+}
+.ribbon-right {
+  right: 0;
+  clip-path: inset(0 0 0 calc(var(--cut) * 100%));
+  border-radius: 0 4px 4px 0;
+}
+.ribbon-track.is-cut .ribbon-left {
+  transform: translate(-46px, 128%) rotate(-13deg);
+  opacity: 0.92;
+  clip-path: none;
+}
+.ribbon-track.is-cut .ribbon-right {
+  transform: translate(46px, 128%) rotate(13deg);
+  opacity: 0.92;
+  clip-path: none;
+}
+.ribbon-knot {
+  position: absolute;
+  left: 50%; top: 50%;
+  font-size: 52px;
+  z-index: 3;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.scissors {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -140%) rotate(-18deg);
+  color: var(--gold-soft);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  z-index: 4;
+  pointer-events: none;
+  transition: left 0.06s linear;
+}
+.ribbon-light {
+  position: absolute; inset: -70px -30px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 205, 120, 0.5), transparent 65%);
+  animation: lightIn 1.1s ease-out both;
+  pointer-events: none;
+}
+@keyframes lightIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+
+.cut-button {
+  margin-top: 56px;
+  z-index: 2;
+  display: inline-flex; align-items: center; gap: 9px;
+  border: 1px solid var(--gold);
+  color: var(--gold-soft);
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  background: rgba(212, 175, 55, 0.07);
+}
+.cut-button:hover { background: rgba(212, 175, 55, 0.18); }
+.opening-hint { margin-top: 14px; font-size: 0.85rem; color: rgba(255,246,230,.45); z-index: 2; }
